@@ -1,19 +1,19 @@
 # nginx
 NGINX (Web Server,Reverse proxy,Load balancer)
 
-#Package Installation:
+#### Package Installation: 
 [sujit@server ~]$ sudo  yum module list nginx
 [sujit@server ~]$ sudo yum module enable nginx:stream_version
 [sujit@server ~]$ sudo dnf install nginx
 
-#Start and enable the newly-installed nginx service.
+#### Start and enable the newly-installed nginx service.
 [sujit@server ~]$ sudo systemctl enable --now nginx
 
-#Confirm the nginx service is up and running:
+####Confirm the nginx service is up and running:
 [sujit@server ~]$ sudo systemctl status nginx
 
 
-#Modify the firewall:
+####Modify the firewall:
 ```
 [root@utility ~]# firewall-cmd --permanent --add-service=http
 success
@@ -22,18 +22,18 @@ success
 [root@utility ~]# firewall-cmd --reload
 success
 ```
-#Configure the server:
+####Configure the server:
 Host file(DNS Entry):  
 Vim /etc/hosts 
 ```
 192.168.10.135 example.com
 ```
 
-#Verify the installation:
+####Verify the installation:
 $ sudo nginx -v
 nginx version: nginx/1.6.3
 
-#Create Index.html file:
+####Create Index.html file:
 ```
 sudo mkdir -p /var/www/example.com/html
 sudo chown -R $USER:$USER /var/www/example.com/html
@@ -50,12 +50,12 @@ vim /var/www/example.com/html/index.html
 </html>
 ```
 
-#Update server’s SELinux security contexts:
+####Update server’s SELinux security contexts:
 ```
 semanage fcontext -a -t httpd_sys_content_t "/var/www/example.com/html/(/.*)?"
 restorecon -Rv /var/www/example.com/html/
 ```
-#Backup Original config file:
+####Backup Original config file:
 ```
 cp -v /etc/nginx/nginx.conf /etc/nginx/nginx.conf.original
 vim /etc/nginx/nginx.conf 
@@ -67,7 +67,7 @@ server {
         server_name  example.com;
         root         /var/www/example.com/html;
 ```
-#Setting up virtual domain/host:
+####Setting up virtual domain/host:
 ```
 sudo useradd -d /home/vhostusr -m -k /dev/null -s /usr/sbin/nologin vhostusr
 passwd -l vhostusr
@@ -130,7 +130,7 @@ server {
         }
 }
 ```
-#Creating Sample Pages for Each Site:
+#### Creating Sample Pages for Each Site:
 vhost1.com:
 
 vim /var/www/vhost1.com/html/index.html
@@ -163,7 +163,7 @@ vim /var/www/vhost1.com/html/index.html
  chown -R vhostusr:vhostusr /var/www/vhost1.com/html/
  chown -R vhostusr:vhostusr /var/www/vhost2.com/html/
 
-#DNS Server Entry:
+#### DNS Server Entry:
 
 [root@utility conf.d]# vim /etc/hosts
 ```
@@ -178,11 +178,11 @@ vim /var/www/vhost1.com/html/index.html
 ## or ##
  $ sudo systemcl reload nginx
 
-#Enable HTTPS:
+#### Enable HTTPS:
 ---------------------
 
 
-#Load Balancer:
+#### Load Balancer:
 --------------------------
  [root@utility ~]# cat /etc/nginx/conf.d/domain.exampel.com.conf
 ```
@@ -213,7 +213,7 @@ upstream backend {
  ## or ##
  $ sudo systemcl reload nginx
 
-#Verify:
+#### Verify:
  Verify that TCP port 80 or 443 opened using ss command command:
  $ sudo ss -tulpn | grep 80
 
