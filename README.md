@@ -1,44 +1,45 @@
 # nginx
 NGINX (Web Server,Reverse proxy,Load balancer)
 
-https://linuxhint.com/install_nginx_centos8/
-https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-8/#Testing
-
-Package Installation:
+#Package Installation:
 [sujit@server ~]$ sudo  yum module list nginx
 [sujit@server ~]$ sudo yum module enable nginx:stream_version
 [sujit@server ~]$ sudo dnf install nginx
 
-Start and enable the newly-installed nginx service.
+#Start and enable the newly-installed nginx service.
 [sujit@server ~]$ sudo systemctl enable --now nginx
 
-Confirm the nginx service is up and running:
+#Confirm the nginx service is up and running:
 [sujit@server ~]$ sudo systemctl status nginx
 
 
-Modify the firewall:
+#Modify the firewall:
+```
 [root@utility ~]# firewall-cmd --permanent --add-service=http
 success
 [root@utility ~]# firewall-cmd --permanent --add-service=https
 success
 [root@utility ~]# firewall-cmd --reload
 success
-[root@utility ~]#
-
-Configure the server:
-
-Host file(DNS Entry):
-Vim /etc/hosts
+```
+#Configure the server:
+Host file(DNS Entry):  
+Vim /etc/hosts 
+```
 192.168.10.135 example.com
+```
 
-Verify the installation:
+#Verify the installation:
 $ sudo nginx -v
 nginx version: nginx/1.6.3
 
-Create Index.html file:
+#Create Index.html file:
+```
 sudo mkdir -p /var/www/example.com/html
 sudo chown -R $USER:$USER /var/www/example.com/html
 vim /var/www/example.com/html/index.html
+```
+```
 <html>
     <head>
         <title>Welcome to Example.com!</title>
@@ -47,24 +48,27 @@ vim /var/www/example.com/html/index.html
         <h1>Success!  The Example.com is working!</h1>
     </body>
 </html>
+```
 
-
-Update server’s SELinux security contexts:
+#Update server’s SELinux security contexts:
+```
 semanage fcontext -a -t httpd_sys_content_t "/var/www/example.com/html/(/.*)?"
 restorecon -Rv /var/www/example.com/html/
-
-Backup Original config file:
+```
+#Backup Original config file:
+```
 cp -v /etc/nginx/nginx.conf /etc/nginx/nginx.conf.original
-
 vim /etc/nginx/nginx.conf 
-    server {
+```
+``` 
+server {
         listen       80 default_server;
         listen       [::]:80 default_server;
-        server_name  _;
+        server_name  example.com;
         root         /var/www/example.com/html;
-
-Setting up virtual domain/host:
-
+```
+#Setting up virtual domain/host:
+```
 sudo useradd -d /home/vhostusr -m -k /dev/null -s /usr/sbin/nologin vhostusr
 passwd -l vhostusr
 
@@ -77,7 +81,8 @@ semanage fcontext -a -t httpd_sys_content_t "/var/www/vhost2.com/html/(/.*)?"
 restorecon -Rv /var/www/vhost2.com/html/
 
 vim /etc/nginx/conf.d/vhost1.com.conf
-
+```
+```
 server {
    ## Listen to TCP port 80 ##
         listen 80;
@@ -99,8 +104,10 @@ server {
                 try_files $uri $uri/ =404;
         }
 }
+```
 
 vim /etc/nginx/conf.d/vhost2.com.conf
+```
 server {
    ## Listen to TCP port 80 ##
         listen 80;
@@ -122,12 +129,12 @@ server {
                 try_files $uri $uri/ =404;
         }
 }
-
-Creating Sample Pages for Each Site:
+```
+#Creating Sample Pages for Each Site:
 vhost1.com:
 
 vim /var/www/vhost1.com/html/index.html
-
+```
 <html>
     <head>
         <title>Welcome to vhost1.com!</title>
@@ -136,9 +143,9 @@ vim /var/www/vhost1.com/html/index.html
         <h1>Success!  The vhost1.com server block is working!</h1>
     </body>
 </html>
-
+```
 vhost2.com:
-
+```
 vim /var/www/vhost1.com/html/index.html
 
 <html>
@@ -149,36 +156,36 @@ vim /var/www/vhost1.com/html/index.html
         <h1>Success!  The vhost1.com server block is working!</h1>
     </body>
 </html>
+```
 
+ chmod -R 0555 /var/www/vhost1.com/html/
+ chmod -R 0555 /var/www/vhost2.com/html/
+ chown -R vhostusr:vhostusr /var/www/vhost1.com/html/
+ chown -R vhostusr:vhostusr /var/www/vhost2.com/html/
 
-chmod -R 0555 /var/www/vhost1.com/html/
-chmod -R 0555 /var/www/vhost2.com/html/
-chown -R vhostusr:vhostusr /var/www/vhost1.com/html/
-chown -R vhostusr:vhostusr /var/www/vhost2.com/html/
+#DNS Server Entry:
 
-DNS Server Entry:
-
-[root@utility conf.d]# cat /etc/hosts
-127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+[root@utility conf.d]# vim /etc/hosts
+```
 192.168.10.155 vhost2.com
 192.168.10.155 vhost1.com
 192.168.10.155 example.com
+```
 
-$ sudo nginx -t
-If not erros means reload the Nginx server:
-$ sudo nginx -s reload
+ $ sudo nginx -t
+ If not erros means reload the Nginx server:
+ $ sudo nginx -s reload
 ## or ##
-$ sudo systemcl reload nginx
+ $ sudo systemcl reload nginx
 
-Enable HTTPS:
+#Enable HTTPS:
 ---------------------
 
 
-Load Balancer:
+#Load Balancer:
 --------------------------
-[root@utility ~]# cat /etc/nginx/conf.d/domain.exampel.com.conf
-
+ [root@utility ~]# cat /etc/nginx/conf.d/domain.exampel.com.conf
+```
 upstream backend {
         server srv1.example.com;
         server srv2.example.com;
@@ -198,26 +205,27 @@ upstream backend {
         }
 }
 
+```
 
-$ sudo nginx -t
-If not erros means reload the Nginx server:
-$ sudo nginx -s reload
-## or ##
-$ sudo systemcl reload nginx
+ $ sudo nginx -t
+ If not erros means reload the Nginx server:
+ $ sudo nginx -s reload
+ ## or ##
+ $ sudo systemcl reload nginx
 
-Verify:
-Verify that TCP port 80 or 443 opened using ss command command:
-$ sudo ss -tulpn | grep 80
+#Verify:
+ Verify that TCP port 80 or 443 opened using ss command command:
+ $ sudo ss -tulpn | grep 80
 
 Reverse proxy:
 ---------------------------------
 
 
-Monitoring:
+#Monitoring:
 
 
-Additional Command:
-
+#Additional Command:
+```
 Search and info for Nginx package:
 $ sudo yum search nginx
 $ sudo yum list nginx
@@ -229,6 +237,10 @@ $ sudo yum module enable nginx:1.16
 $ sudo yum module list nginx
 
 $ sudo systemctl reload nginx ## <-- reload the server ##
-
+```
 
 Troubleshooting:
+
+Reference:
+https://linuxhint.com/install_nginx_centos8/
+https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-8/#Testing
