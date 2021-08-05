@@ -157,12 +157,12 @@ vim /var/www/vhost1.com/html/index.html
     </body>
 </html>
 ```
-
+```
  chmod -R 0555 /var/www/vhost1.com/html/
  chmod -R 0555 /var/www/vhost2.com/html/
  chown -R vhostusr:vhostusr /var/www/vhost1.com/html/
  chown -R vhostusr:vhostusr /var/www/vhost2.com/html/
-
+```
 #### DNS Server Entry:
 
 [root@utility conf.d]# vim /etc/hosts
