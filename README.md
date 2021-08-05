@@ -283,10 +283,40 @@ upstream backend {
  Verify that TCP port 80 or 443 opened using ss command command:
  $ sudo ss -tulpn | grep 80
 
-Reverse proxy:
+Reverse proxy on another server:
 ---------------------------------
+[root@srv ~]# vim /etc/nginx/conf.d/example.com.conf
+```
+upstream backend2 {
+        server google.com;
+    }
+
+upstream backend3 {
+        server 192.168.10.149;
+    }
+
+    server {
+        listen      80;
+        listen      [::]:80;
+        server_name example.com example.akij.com;
+
+        location /app {
+                proxy_redirect      off;
+                proxy_set_header    X-Real-IP $remote_addr;
+                proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header    Host $http_host;
+                proxy_pass http://backend2;
+        }
 
 
+        location / {
+                proxy_redirect      off;
+                proxy_set_header    X-Real-IP $remote_addr;
+                proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header    Host $http_host;
+                proxy_pass http://backend3;
+        }
+```
 #Monitoring:
 
 
@@ -307,6 +337,7 @@ $ sudo systemctl reload nginx ## <-- reload the server ##
 
 Troubleshooting:
 
-Reference:
-https://linuxhint.com/install_nginx_centos8/
-https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-8/#Testing
+Reference:  
+ https://linuxhint.com/install_nginx_centos8/  
+ https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-8/#Testing  
+ https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/  
