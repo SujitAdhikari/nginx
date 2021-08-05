@@ -1,4 +1,4 @@
-Installing Nginx Web Server on CentOS/RHEL8/AlmaLinux/Rocky Linux:
+Installing Nginx Web Server on CentOS 8/RHEL8/AlmaLinux/Rocky Linux:
 ---------------------
 
 [root@server ~]# dnf module install nginx
