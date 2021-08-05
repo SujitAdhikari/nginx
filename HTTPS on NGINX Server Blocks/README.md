@@ -1,11 +1,11 @@
 Installing Nginx Web Server on CentOS/RHEL8/AlmaLinux/Rocky Linux:
+---------------------
 
 [root@server ~]# dnf module install nginx
 
 Enable and start Nginx service.
 --------------------------------
 [root@server ~]# systemctl enable --now nginx.service
-Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service â /usr/lib/systemd/system/nginx.service.
 
 Allow HTTP and HTTPS services in Linux firewall.
 --------------------------------
@@ -13,16 +13,17 @@ Allow HTTP and HTTPS services in Linux firewall.
 
 Generate Self-Signed SSL/TLS certificate:
 ---------------------------------
-openssl req -newkey rsa:4096 -nodes -keyout /etc/pki/tls/private/test.key -x509 -days 365 -out /etc/pki/tls/certs/test.crt 
+ [root@server ~]# openssl req -newkey rsa:4096 -nodes -keyout /etc/pki/tls/private/test.key -x509 -days 365 -out /etc/pki/tls/certs/test.crt 
 
 To improve the SSL/TLS security by ensuring a secure cryptographic key exchange, generate Diffie-Hellman (DH) keys parameters.
 
 [root@server ~]# openssl dhparam -out /etc/pki/tls/certs/test.pem 4096
 
 
-
 NOTE: If you want to redirect HTTP traffic to HTTPS, you can simply add the line below under the Nginx HTTP configuration section.
 return 301 https://$host$request_uri;
+
+ vim /etc/nginx/conf.d/test.com.conf
 
 server {
     listen 80;
