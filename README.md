@@ -73,12 +73,16 @@ sudo useradd -d /home/vhostusr -m -k /dev/null -s /usr/sbin/nologin vhostusr
 passwd -l vhostusr
 
 mkdir /var/www/vhost1.com/html/ -p
+semanage fcontext -a -t httpd_sys_content_t "/var/www/example.com/html/(/.*)?"
+restorecon -Rv /var/www/example.com/html
+
+mkdir /var/www/vhost1.com/html/ -p
 semanage fcontext -a -t httpd_sys_content_t "/var/www/vhost1.com/html/(/.*)?"
-restorecon -Rv /var/www/vhost1.com/html/
+restorecon -Rv /var/www/vhost1.com/html
 
 mkdir /var/www/vhost2.com/html/ -p
 semanage fcontext -a -t httpd_sys_content_t "/var/www/vhost2.com/html/(/.*)?"
-restorecon -Rv /var/www/vhost2.com/html/
+restorecon -Rv /var/www/vhost2.com/html
 
 vim /etc/nginx/conf.d/vhost1.com.conf
 ```
@@ -158,8 +162,11 @@ vim /var/www/vhost1.com/html/index.html
 </html>
 ```
 ```
+ chmod -R 0555 /var/www/example.com/html
  chmod -R 0555 /var/www/vhost1.com/html/
  chmod -R 0555 /var/www/vhost2.com/html/
+ 
+ chown -R vhostusr:vhostusr /var/www/example.com/html
  chown -R vhostusr:vhostusr /var/www/vhost1.com/html/
  chown -R vhostusr:vhostusr /var/www/vhost2.com/html/
 ```
@@ -178,6 +185,12 @@ vim /var/www/vhost1.com/html/index.html
 ## or ##
  $ sudo systemcl reload nginx
 
+**Verify:**
+```
+$ curl example.com
+$ curl vhost1.com
+$ curl vhost2.com
+```
 #### Enable HTTPS:
 ---------------------
 
