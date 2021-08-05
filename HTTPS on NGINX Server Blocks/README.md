@@ -24,7 +24,7 @@ NOTE: If you want to redirect HTTP traffic to HTTPS, you can simply add the line
 return 301 https://$host$request_uri;
 
  vim /etc/nginx/conf.d/test.com.conf
-
+```
 server {
     listen 80;
     server_name test.com www.test.com;
@@ -74,7 +74,7 @@ server {
             location = /50x.html {
         }
 }
-
+```
 If you are using the certificates from CA, you will be provided with two certificate files, the Intermediate certificate and the server certificate. To use them, you need to put them together in a single certificate file.
 
 cat server.crt intermediate.crt >> /etc/pki/tls/certs/ser-int-cert.crt
