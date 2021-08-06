@@ -252,7 +252,7 @@ server {
 --------------------------
  [root@utility ~]# cat /etc/nginx/conf.d/domain.exampel.com.conf
 ```
-upstream backend {
+upstream servers {
         server srv1.example.com;
         server srv2.example.com;
     }
@@ -267,7 +267,7 @@ upstream backend {
                 proxy_set_header    X-Real-IP $remote_addr;
                 proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header    Host $http_host;
-                proxy_pass http://backend;
+                proxy_pass http://servers;
         }
 }
 
